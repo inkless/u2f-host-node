@@ -1,7 +1,2 @@
-class U2FClient {
-  public hello() {
-    return 'world';
-  }
-}
-
-export = new U2FClient();
+export { U2FDevice } from './u2f-device';
+export { U2FHIDDevice } from './u2f-hid-device';
