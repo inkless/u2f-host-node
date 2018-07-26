@@ -38,7 +38,7 @@ async function test() {
   device.close()
 }
 
-// test()
+test()
 
 async function test2() {
   const device = await U2FHIDDevice.open(deviceInfo)
@@ -92,39 +92,3 @@ async function test2() {
 
 test2()
 
-
-// console.log(device)
-
-
-// d.init()
-
-// d.on('yoyo', function (a, b) {
-//   console.log(a, b)
-// })
-//
-// d.emit('yoyo', 'a', 'b')
-//
-//
-
-// async function foo() {
-//   // try {
-//   throw new Error('ff')
-//   return await bar()
-//   // } catch(e) {
-//   //   console.log('xx', e)
-//   //   throw e;
-//   // }
-// }
-//
-// async function bar() {
-//   throw new Error('hda');
-//   return new Promise(function(resolve, reject) {
-//     setTimeout(() => {
-//       reject('haha')
-//     }, 1000)
-//   })
-// }
-//
-// foo()
-//   .then(console.log)
-//   .catch((e) => { console.log('yy', e) })
