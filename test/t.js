@@ -38,7 +38,7 @@ async function test() {
   device.close()
 }
 
-test()
+// test()
 
 async function test2() {
   const device = await U2FHIDDevice.open(deviceInfo)
