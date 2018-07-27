@@ -3,11 +3,17 @@ U2F Host Node
 
 A u2f host implementation in node.js
 
+## Install
+```bash
+npm install u2f-host-node --save
+# or
+yarn add u2f-host-node
+```
 
 ## Usage
 ```javascript
 const u2f = require('u2f')
-const U2FHost = require('u2f-host-node')
+const U2FHost = require('u2f-host-node').U2FHost
 
 async function main() {
   const host = U2FHost.discover()
