@@ -6,27 +6,27 @@ A u2f host implementation in node.js
 
 ## Usage
 ```javascript
-async function register() {
-  const registerRequest = {
-    version: 'U2F_V2',
-    appId: 'https://example.com',
-    challenge: '1111100000000000000000000',
-  }
+const u2f = require('u2f')
+const U2FHost = require('u2f-host-node')
 
-  const data = await host.register(authRequest)
+async function main() {
+  const host = U2FHost.discover()
+  const appId = 'https://example.com'
+
+  // register
+  const registerReq = u2f.request(appId)
+  console.log('Touch the key to register')
+  const registerResponse = await host.register(registerReq)
+  const registration = u2f.checkRegistration(authRequest, registerResponse)
+
+  // sign
+  const signRequest = u2f.request(appId, registration.keyHandle)
+  console.log('Touch the key to sign')
+  const signResponse = await host.sign(signRequest)
+  const verified = u2f.checkSignature(signRequest, signResponse, registration.publicKey)
 }
 
-async function sign() {
-  const signRequest = {
-    version: 'U2F_V2',
-    appId: 'https://example.com',
-    challenge: '1111100000000000000000000',
-    keyHandle: 'neNRIOz1-CHZdHxXw8VPqJ1ju5OIHdmCLOHxDmSD42NTduFISr10l3yPCNo8X9Jcizg661Jb1h_6FFaXawbNSw',
-  }
-
-  const data = await host.sign(signRequest)
-}
-
+main()
 ```
 
 ## Docs
