@@ -1,16 +1,35 @@
 import { expect } from 'chai';
+import * as HID from 'node-hid';
+import { SinonStub, stub } from 'sinon';
 import { enumerateDevices, fromWebsafeBase64, hash, invert, toWebsafeBase64 } from '../src/util';
 
 describe('Util', function () {
   context('#enumerateDevices', function () {
-    it('should enumerate fido devices', function () {
-      const devices = enumerateDevices();
-      expect(devices.length).to.ok;
+    let devicesStub: SinonStub;
+    beforeEach(function () {
+      devicesStub = stub(HID, 'devices');
     });
 
-    it('should enumerate all devices', function () {
+    afterEach(function () {
+      devicesStub.restore();
+    });
+
+    it('should enumerate fido devices', function () {
+      devicesStub.returns([{ usagePage: 0xf1d0, usage: 1 }]);
+      const devices = enumerateDevices();
+      expect(devices.length).to.equal(1);
+    });
+
+    it('should return empty array if no devices', function () {
+      devicesStub.returns([]);
+      const devices = enumerateDevices();
+      expect(devices.length).to.equal(0);
+    });
+
+    it('should return correctly for custom detectFn', function () {
+      devicesStub.returns([{ usagePage: 0x00, usage: 1 }]);
       const devices = enumerateDevices(() => true);
-      expect(devices.length).to.ok;
+      expect(devices.length).to.equal(1);
     });
   });
 

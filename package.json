@@ -10,6 +10,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "build": "tsc",
+    "example": "npm run build && node examples/main.js",
     "test": "mocha -r ts-node/register \"test/**/*.ts\"",
     "test:dev": "mocha -r ts-node/register -w --watch-extensions ts \"test/**/*.ts\"",
     "lint": "tslint src/**/*.ts test/**/*.ts",

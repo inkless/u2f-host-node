@@ -28,7 +28,7 @@ async function main() {
   // sign
   const signRequest = u2f.request(appId, registration.keyHandle)
   console.log('Touch the key to sign')
-  const signResponse = await host.sign(signRequest)
+  const signResponse = await host.authenticate(signRequest)
   const verified = u2f.checkSignature(signRequest, signResponse, registration.publicKey)
 }
 

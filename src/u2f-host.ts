@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { Device } from 'node-hid';
 import Deferred from './defer';
-import { IU2FRegisterRequest, IU2FSignRequest, U2FDevice } from './u2f-device';
+import { IU2FAuthenticateRequest, IU2FRegisterRequest, U2FDevice } from './u2f-device';
 import { U2FHIDDevice } from './u2f-hid-device';
 import { enumerateDevices } from './util';
 
@@ -43,7 +43,7 @@ export class U2FHost extends EventEmitter {
     });
   }
 
-  public async sign(req: IU2FSignRequest) {
+  public async authenticate(req: IU2FAuthenticateRequest) {
     return await this._doWithDevices(async (d: U2FDevice) => {
       return await d.authenticate(req);
     });

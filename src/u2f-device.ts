@@ -36,11 +36,11 @@ export interface IU2FRegisterResponse extends IU2FRegisterRequest {
   clientData: string;
 }
 
-export interface IU2FSignRequest extends IU2FRegisterRequest {
+export interface IU2FAuthenticateRequest extends IU2FRegisterRequest {
   keyHandle: string;
 }
 
-export interface IU2FSignResponse extends IU2FSignRequest {
+export interface IU2FAuthenticateResponse extends IU2FAuthenticateRequest {
   signatureData: string;
   clientData: string;
 }
@@ -102,7 +102,7 @@ export class U2FDevice extends EventEmitter {
     };
   }
 
-  public async authenticate(req: IU2FSignRequest): Promise<IU2FSignResponse> {
+  public async authenticate(req: IU2FAuthenticateRequest): Promise<IU2FAuthenticateResponse> {
     const clientData = JSON.stringify({
       typ: U2F_CLIENT_DATA_TYP_AUTHENTICATE,
       challenge: req.challenge,
@@ -125,7 +125,7 @@ export class U2FDevice extends EventEmitter {
     };
   }
 
-  public async checkOnly(req: IU2FSignRequest) {
+  public async checkOnly(req: IU2FAuthenticateRequest) {
     const clientData = '';
     const keyHandle = Buffer.from(req.keyHandle, 'base64');
 
