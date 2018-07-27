@@ -2,6 +2,7 @@ const u2f = require('u2f')
 const enumerateDevices = require('../dist/util').enumerateDevices
 const U2FHIDDevice = require('../dist/u2f-hid-device').U2FHIDDevice
 const U2FDevice = require('../dist/u2f-device').U2FDevice
+const U2FHost = require('../dist').U2FHost
 
 const deviceInfo = enumerateDevices()[0]
 // console.log(deviceInfo)
@@ -90,5 +91,36 @@ async function test2() {
   u2fDevice.close()
 }
 
-test2()
+// test2()
+
+async function test3() {
+  const host = U2FHost.discover()
+
+  const appId = 'https://keevo.com'
+  let registration
+  try {
+    const authRequest = u2f.request(appId)
+    console.log('Touch the key to register')
+    const data = await host.register(authRequest)
+    console.log('register', data)
+    registration = u2f.checkRegistration(authRequest, data)
+  } catch (e) {
+    console.error(e)
+  }
+
+  // sign
+  const signRequest = u2f.request(appId, registration.keyHandle)
+  try {
+    console.log('Touch the key to sign')
+    const data = await host.sign(signRequest)
+    console.log('sign', data)
+
+    const verified = u2f.checkSignature(signRequest, data, registration.publicKey)
+    console.log('verified', verified)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+test3()
 

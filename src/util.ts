@@ -4,13 +4,16 @@ import { Device, devices } from 'node-hid';
 const FIDO_USAGE_PAGE = 0xf1d0;
 const FIDO_USAGE_U2FHID = 1;
 
-export function enumerateDevices() {
-  return devices().filter(function (deviceInfo: Device) {
-    const isCompatible =
-      deviceInfo.usagePage === FIDO_USAGE_PAGE && deviceInfo.usage === FIDO_USAGE_U2FHID;
+export function enumerateDevices(detectFn?: (d: Device) => boolean): Device[] {
+  if (!detectFn) {
+    detectFn = function (deviceInfo: Device) {
+      const isCompatible =
+        deviceInfo.usagePage === FIDO_USAGE_PAGE && deviceInfo.usage === FIDO_USAGE_U2FHID;
 
-    return isCompatible;
-  });
+      return isCompatible;
+    };
+  }
+  return devices().filter(detectFn);
 }
 
 export function invert(obj: { [key: string]: string | number }) {
