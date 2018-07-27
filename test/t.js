@@ -4,7 +4,7 @@ const U2FHIDDevice = require('../dist/u2f-hid-device').U2FHIDDevice
 const U2FDevice = require('../dist/u2f-device').U2FDevice
 const U2FHost = require('../dist').U2FHost
 
-const deviceInfo = enumerateDevices()[0]
+// const deviceInfo = enumerateDevices()[0]
 // console.log(deviceInfo)
 
 async function test() {
@@ -100,10 +100,12 @@ async function test3() {
   let registration
   try {
     const authRequest = u2f.request(appId)
+    console.log('authRequest', authRequest)
     console.log('Touch the key to register')
     const data = await host.register(authRequest)
     console.log('register', data)
     registration = u2f.checkRegistration(authRequest, data)
+    console.log('registration', registration)
   } catch (e) {
     console.error(e)
   }
@@ -111,6 +113,7 @@ async function test3() {
   // sign
   const signRequest = u2f.request(appId, registration.keyHandle)
   try {
+    console.log('signRequest', signRequest)
     console.log('Touch the key to sign')
     const data = await host.sign(signRequest)
     console.log('sign', data)
