@@ -8,7 +8,7 @@ async function main() {
   let registration
   try {
     const regRequest = u2f.request(appId)
-    // console.log('authRequest', regRequest)
+    console.log('reqRequest', regRequest)
     console.log('Touch the key to register...')
     const data = await host.register(regRequest)
     // console.log('register', data)
@@ -20,6 +20,7 @@ async function main() {
 
   // sign
   const signRequest = u2f.request(appId, registration.keyHandle)
+  console.log('signRequest', signRequest)
   try {
     // console.log('signRequest', signRequest)
     console.log('Touch the key to sign...')
