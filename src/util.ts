@@ -47,3 +47,10 @@ export function hash(data: Buffer | string) {
     .update(data)
     .digest();
 }
+
+export function debug(...args: any[]) {
+  if (process.env.DEBUG_DEVICE_DATA) {
+    // tslint:disable-next-line no-console
+    console.log(...args);
+  }
+}
