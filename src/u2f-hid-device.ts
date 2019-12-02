@@ -2,6 +2,7 @@ import { pseudoRandomBytes } from 'crypto';
 import { EventEmitter } from 'events';
 import { Device, HID } from 'node-hid';
 import Deferred from './defer';
+import { debug } from './util';
 
 const U2FHID_PING = 0x80 | 0x01;
 const U2FHID_MSG = 0x80 | 0x03;
@@ -162,6 +163,8 @@ export class U2FHIDDevice extends EventEmitter {
   }
 
   private _onData = (buf: Buffer) => {
+    debug('ON DATA', buf.toString('hex'));
+
     // Ignore packets outside the transaction.
     if (!this._curTransaction) {
       return;
@@ -248,6 +251,7 @@ export class U2FHIDDevice extends EventEmitter {
     const initData = Array.from(buf);
     initData.unshift(0);
 
+    debug('WRITE INIT DATA', `00${buf.toString('hex')}`);
     this.device.write(initData);
 
     // Create & send continuation packets.
@@ -262,6 +266,7 @@ export class U2FHIDDevice extends EventEmitter {
       const continueData = Array.from(buf);
       continueData.unshift(0);
 
+      debug('WRITE CONTINUE DATA', `00${buf.toString('hex')}`);
       this.device.write(continueData);
     }
 

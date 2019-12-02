@@ -30,10 +30,14 @@ describe('U2F Device', function () {
   });
 
   it('should checkOnly correctly', async function () {
+    this.timeout(30 * 1000);
+    const regRequest = u2f.request(appId);
+    console.log('Touch the key to register'); // tslint:disable-line
+    const response = await this.u2fDevice.register(regRequest);
+    const { keyHandle } = u2f.checkRegistration(regRequest, response);
     const data = await this.u2fDevice.checkOnly({
       appId: 'https://u2f-host-node.com',
-      keyHandle:
-        'mpbDioCaKM4w967aa04kaR6e2UlecNI7iKcPwEA3zcaOTLXJsFMdRsW0dnl-PicjShjsiffI_GjvMGXJoCAiKQ',
+      keyHandle,
     });
     expect(data).to.be.true;
   });
