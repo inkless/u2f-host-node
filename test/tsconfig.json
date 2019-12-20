@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig",
   "include": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "../types"
   ]
 }

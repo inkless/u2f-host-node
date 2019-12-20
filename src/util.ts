@@ -6,7 +6,7 @@ const FIDO_USAGE_U2FHID = 1;
 
 export function enumerateDevices(detectFn?: (d: Device) => boolean): Device[] {
   if (!detectFn) {
-    detectFn = function (deviceInfo: Device) {
+    detectFn = function(deviceInfo: Device) {
       const isCompatible =
         deviceInfo.usagePage === FIDO_USAGE_PAGE && deviceInfo.usage === FIDO_USAGE_U2FHID;
 
@@ -38,7 +38,7 @@ export function toWebsafeBase64(buf: Buffer | string) {
 
 export function fromWebsafeBase64(base64: string) {
   const normalBase64 =
-    base64.replace(/\-/g, '+').replace(/_/g, '/') + '=='.substring(0, (3 * base64.length) % 4);
+    base64.replace(/-/g, '+').replace(/_/g, '/') + '=='.substring(0, (3 * base64.length) % 4);
   return Buffer.from(normalBase64, 'base64');
 }
 
@@ -50,7 +50,10 @@ export function hash(data: Buffer | string) {
 
 export function debug(...args: any[]) {
   if (process.env.DEBUG_DEVICE_DATA) {
-    // tslint:disable-next-line no-console
     console.log(...args);
   }
+}
+
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

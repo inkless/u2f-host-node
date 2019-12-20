@@ -2,8 +2,7 @@ import { expect } from 'chai';
 import { U2FDevice } from '../src/u2f-device';
 import { U2FHIDDevice } from '../src/u2f-hid-device';
 import { enumerateDevices } from '../src/util';
-
-const u2f = require('u2f'); // tslint:disable-line
+import * as u2f from 'u2f';
 
 const device = enumerateDevices()[0];
 const appId = 'https://u2f-host-node.com';
@@ -32,7 +31,7 @@ describe('U2F Device', function () {
   it('should checkOnly correctly', async function () {
     this.timeout(30 * 1000);
     const regRequest = u2f.request(appId);
-    console.log('Touch the key to register'); // tslint:disable-line
+    console.log('Touch the key to register');
     const response = await this.u2fDevice.register(regRequest);
     const { keyHandle } = u2f.checkRegistration(regRequest, response);
     const data = await this.u2fDevice.checkOnly({
@@ -45,7 +44,7 @@ describe('U2F Device', function () {
   it('should register correctly', async function () {
     this.timeout(30 * 1000);
     const regRequest = u2f.request(appId);
-    console.log('Touch the key to register'); // tslint:disable-line
+    console.log('Touch the key to register');
     const data = await this.u2fDevice.register(regRequest);
     registration = u2f.checkRegistration(regRequest, data);
     expect(registration.successful).to.be.true;
@@ -54,7 +53,7 @@ describe('U2F Device', function () {
   it('should authenticate correctly', async function () {
     this.timeout(30 * 1000);
     const signRequest = u2f.request(appId, registration.keyHandle);
-    console.log('Touch the key to authenticate'); // tslint:disable-line
+    console.log('Touch the key to authenticate');
     const data = await this.u2fDevice.authenticate(signRequest);
     const verified = u2f.checkSignature(signRequest, data, registration.publicKey);
     expect(verified.successful).to.be.true;

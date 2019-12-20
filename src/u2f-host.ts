@@ -23,7 +23,7 @@ export class U2FHost extends EventEmitter {
   public devices: Device[] = [];
   public detectFn: DetectFunction | undefined;
 
-  private _lastSync: number = 0;
+  private _lastSync = 0;
 
   constructor({ detectFn }: { detectFn?: DetectFunction }) {
     super();
@@ -63,26 +63,28 @@ export class U2FHost extends EventEmitter {
     const devices = await this._waitForDevices();
 
     let eventEmitted = false;
-    return Promise.race(devices.map(async (device) => {
-      const hidDevice = await U2FHIDDevice.open(device);
-      const u2fDevice = new U2FDevice(hidDevice);
-      u2fDevice.interactionTimeout = this.userPresenceTimeout;
-      u2fDevice.on('user-presence-required', () => {
-        if (!eventEmitted) {
-          this.emit('user-presence-required');
-          eventEmitted = true;
-        }
-      });
+    return Promise.race(
+      devices.map(async (device) => {
+        const hidDevice = await U2FHIDDevice.open(device);
+        const u2fDevice = new U2FDevice(hidDevice);
+        u2fDevice.interactionTimeout = this.userPresenceTimeout;
+        u2fDevice.on('user-presence-required', () => {
+          if (!eventEmitted) {
+            this.emit('user-presence-required');
+            eventEmitted = true;
+          }
+        });
 
-      try {
-        return await fn(u2fDevice);
-      } catch (e) {
-        // throw e;
-        console.error(e); // tslint:disable-line
-      } finally {
-        u2fDevice.close();
-      }
-    }));
+        try {
+          return await fn(u2fDevice);
+        } catch (e) {
+          // throw e;
+          console.error(e);
+        } finally {
+          u2fDevice.close();
+        }
+      })
+    );
   }
 
   private async _waitForDevices() {

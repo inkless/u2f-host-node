@@ -5,7 +5,7 @@ import { enumerateDevices, fromWebsafeBase64, hash, invert, toWebsafeBase64 } fr
 
 describe('Util', function () {
   context('#enumerateDevices', function () {
-    let devicesStub: SinonStub;
+    let devicesStub: SinonStub<[], HID.Device[]>;
     beforeEach(function () {
       devicesStub = stub(HID, 'devices');
     });
@@ -15,7 +15,7 @@ describe('Util', function () {
     });
 
     it('should enumerate fido devices', function () {
-      devicesStub.returns([{ usagePage: 0xf1d0, usage: 1 }]);
+      devicesStub.returns([{ usagePage: 0xf1d0, usage: 1 } as HID.Device]);
       const devices = enumerateDevices();
       expect(devices.length).to.equal(1);
     });
@@ -27,7 +27,7 @@ describe('Util', function () {
     });
 
     it('should return correctly for custom detectFn', function () {
-      devicesStub.returns([{ usagePage: 0x00, usage: 1 }]);
+      devicesStub.returns([{ usagePage: 0x00, usage: 1 } as HID.Device]);
       const devices = enumerateDevices(() => true);
       expect(devices.length).to.equal(1);
     });

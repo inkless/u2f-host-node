@@ -189,7 +189,7 @@ export class U2FHIDDevice extends EventEmitter {
       // console.log('xx', cmd, buf)
       // Initial packet
       if (cmd !== this._curTransaction.command) {
-        return console.error( // tslint:disable-line
+        return console.error(
           'Transaction decoding failure: response is for different operation: ',
           cmd,
           this._curTransaction,
