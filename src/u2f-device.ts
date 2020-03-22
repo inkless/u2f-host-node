@@ -110,10 +110,11 @@ export class U2FDevice extends EventEmitter {
     });
 
     const keyHandle = Buffer.from(req.keyHandle, 'base64');
+    const len = keyHandle.length;
     const buf = Buffer.concat([
       hash(clientData),
       hash(req.appId),
-      Buffer.from([keyHandle.length]),
+      Buffer.alloc(1, len > 0xff ? 0 : len), // set to 0 if overflow
       keyHandle,
     ]);
 
@@ -197,5 +198,5 @@ export class U2FDevice extends EventEmitter {
 
   private _onDisconnected = () => {
     this.emit('disconnected');
-  }
+  };
 }
