@@ -56,7 +56,7 @@ export class U2FDevice extends EventEmitter {
 
     if (this.driver.protocolVersion !== 2) {
       throw new Error(
-        `Driver has unsupported protocol version: ${this.driver.protocolVersion}. Only 2 suported.`,
+        `Driver has unsupported protocol version: ${this.driver.protocolVersion}. Only 2 supported.`,
       );
     }
 
