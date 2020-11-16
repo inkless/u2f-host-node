@@ -39,6 +39,8 @@ interface ITransaction {
   deferred: Deferred<Buffer>;
 }
 
+const hidCache: Map<string, { hid: HID; counter: number }> = new Map();
+
 // FIDO U2F HID Protocol Specification
 // https://fidoalliance.org/specs/fido-u2f-v1.2-ps-20170411/fido-u2f-hid-protocol-v1.2-ps-20170411.html
 export class U2FHIDDevice extends EventEmitter {
@@ -57,6 +59,7 @@ export class U2FHIDDevice extends EventEmitter {
   private _packetBuf = Buffer.alloc(REPORT_SIZE);
   private _transactionQueue: ITransaction[] = [];
   private _curTransaction: ITransaction | undefined;
+  private _devicePath: string;
 
   constructor(deviceInfo: Device) {
     super();
@@ -65,7 +68,22 @@ export class U2FHIDDevice extends EventEmitter {
       throw new Error('Device path does not exist');
     }
 
-    this.device = new HID(deviceInfo.path);
+    this._devicePath = deviceInfo.path;
+
+    const cachedHid = hidCache.get(deviceInfo.path);
+
+    if (cachedHid) {
+      this.device = cachedHid.hid;
+
+      // Not immutable
+      cachedHid.counter += 1;
+    } else {
+      this.device = new HID(deviceInfo.path);
+
+      hidCache.set(deviceInfo.path, { hid: this.device, counter: 1 });
+    }
+
+
     this.device.on('error', this._onError);
     this.device.on('data', this._onData);
   }
@@ -105,6 +123,7 @@ export class U2FHIDDevice extends EventEmitter {
       this._channelId = U2FHID_BROADCAST_CID;
       return await this.init(true);
     } else {
+      debug('DEVICE INITIALIZED', this._channelId);
       return this;
     } // Successful initialization.
   }
@@ -135,11 +154,29 @@ export class U2FHIDDevice extends EventEmitter {
     if (this.closed) {
       return;
     }
+
+    debug('DEVICE CLOSED', this._channelId);
+
     this.closed = true;
     this._curTransaction = undefined;
     this._transactionQueue = [];
 
-    this.device.close();
+    this.device.off('error', this._onError);
+    this.device.off('data', this._onData);
+
+    const cachedHid = hidCache.get(this._devicePath);
+
+    if (cachedHid) {
+      // Not immutable
+      cachedHid.counter -= 1;
+
+      if (cachedHid.counter <= 0) {
+        cachedHid.hid.close();
+
+        hidCache.delete(this._devicePath);
+      }
+    }
+
     this.emit('closed');
   }
 
@@ -157,7 +194,9 @@ export class U2FHIDDevice extends EventEmitter {
     return await this.command(U2FHID_MSG, data);
   }
 
-  private _onError = () => {
+  private _onError = (error: Error) => {
+    debug('ON ERROR', error);
+
     this.close();
     this.emit('disconnected');
   }
